@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter デモ',
       home: Text(
         'Hello,Flutter World!!',
         style: TextStyle(fontSize: 32.0),
