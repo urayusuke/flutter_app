@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Hello Fluuter'),
+          title: Text('Hello Fluuter!'),
         ),
         body: Text(
           'Hello,Flutter World!!',
