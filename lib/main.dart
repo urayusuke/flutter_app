@@ -43,56 +43,58 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({this.title}) : super();
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  String _message;
+class Data {
+  int _price;
+  String _name;
 
+  Data(this._name, this._price) : super();
+
+  @override
+  String toString() {
+    return _name + ':' + _price.toString() + '円';
+  }
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  // サンプルデータ
+  static final _data = [
+    Data('Apple', 200),
+    Data('Orange', 150),
+    Data('Peach', 300)
+  ];
+  Data _item;
+
+  @override
   void initState() {
     super.initState();
-    _message = 'Hello!';
+    _item = _data[0];
   }
 
-  void _setMessage() {
+  void _setData() {
     setState(() {
-      _message = 'タップしました！';
+      _item = (_data..shuffle()).first;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Text(
-        _message,
+        _item.toString(),
         style: TextStyle(fontSize: 32.0),
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: _setMessage,
+        onPressed: _setData,
         tooltip: 'set message',
         child: Icon(Icons.star),
       ), // This trailing comma makes auto-formatting nicer for build methods.
