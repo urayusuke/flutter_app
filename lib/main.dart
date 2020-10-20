@@ -27,42 +27,54 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  var _stackData = <Widget>[
+    Container(
+      color: Colors.red,
+      width: 200.0,
+      height: 200.0,
+      child: Text(
+        "One",
+        style: TextStyle(
+            fontSize: 32.0, fontWeight: FontWeight.w400, fontFamily: "Roboto"),
+      ),
+    ),
+    Container(
+      color: Colors.green,
+      width: 200.0,
+      height: 200.0,
+      child: Text(
+        "Two",
+        style: TextStyle(
+            fontSize: 32.0, fontWeight: FontWeight.w400, fontFamily: "Roboto"),
+      ),
+    ),
+    Container(
+      color: Colors.blue,
+      width: 200.0,
+      height: 200.0,
+      child: Text(
+        "Three",
+        style: TextStyle(
+            fontSize: 32.0, fontWeight: FontWeight.w400, fontFamily: "Roboto"),
+      ),
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('App Name'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('App Name'),
       ),
-      body: new Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              "One",
-              style: TextStyle(
-                  fontSize: 32.0,
-                  color: const Color(0xFF000000),
-                  fontWeight: FontWeight.w400,
-                  fontFamily: "Roboto"),
-            ),
-            Text(
-              "Two",
-              style: TextStyle(
-                  fontSize: 32.0,
-                  color: const Color(0xFF000000),
-                  fontWeight: FontWeight.w400,
-                  fontFamily: "Roboto"),
-            ),
-            Text(
-              "Three",
-              style: TextStyle(
-                  fontSize: 32.0,
-                  color: const Color(0xFF000000),
-                  fontWeight: FontWeight.w400,
-                  fontFamily: "Roboto"),
-            ),
-          ]),
+      body: Stack(children: _stackData),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.android), onPressed: fabPressed),
     );
+  }
+
+  void fabPressed() {
+    setState(() {
+      _stackData.insert(0, _stackData.removeLast());
+    });
   }
 }
