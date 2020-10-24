@@ -27,38 +27,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var _stackData = <Widget>[
-    Container(
-      color: Colors.red,
-      width: 200.0,
-      height: 200.0,
-      child: Text(
-        "One",
-        style: TextStyle(
-            fontSize: 32.0, fontWeight: FontWeight.w400, fontFamily: "Roboto"),
-      ),
-    ),
-    Container(
-      color: Colors.green,
-      width: 200.0,
-      height: 200.0,
-      child: Text(
-        "Two",
-        style: TextStyle(
-            fontSize: 32.0, fontWeight: FontWeight.w400, fontFamily: "Roboto"),
-      ),
-    ),
-    Container(
-      color: Colors.blue,
-      width: 200.0,
-      height: 200.0,
-      child: Text(
-        "Three",
-        style: TextStyle(
-            fontSize: 32.0, fontWeight: FontWeight.w400, fontFamily: "Roboto"),
-      ),
-    ),
-  ];
+  var _message;
+  static var _janken = <String>['グー', 'チョキ', 'パー'];
+
+  @override
+  void initState() {
+    _message = 'ok.';
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,15 +42,45 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('App Name'),
       ),
-      body: Stack(children: _stackData),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.android), onPressed: fabPressed),
+      body: Center(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text(
+                  _message,
+                  style: TextStyle(
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: "Roboto"),
+                ),
+              ),
+              RawMaterialButton(
+                fillColor: Colors.white,
+                highlightColor: Colors.red,
+                elevation: 10.0,
+                padding: EdgeInsets.all(10.0),
+                child: Text(
+                  "Push me!",
+                  style: TextStyle(
+                      fontSize: 32.0,
+                      color: const Color(0xFF000000),
+                      fontWeight: FontWeight.w400,
+                      fontFamily: "Roboto"),
+                ),
+                onPressed: buttonPressed,
+              ),
+            ]),
+      ),
     );
   }
 
-  void fabPressed() {
+  void buttonPressed() {
     setState(() {
-      _stackData.insert(0, _stackData.removeLast());
+      _message = (_janken..shuffle()).first;
     });
   }
 }
