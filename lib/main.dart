@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
+
+import 'dart:typed_data';
+import 'dart:async';
+import 'dart:ui' as ui;
+import 'dart:math';
 
 void main() {
   runApp(new MyApp());
@@ -28,10 +34,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _message = 'ok';
-  bool _switch = true;
-  double _slider = 0.0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,158 +41,74 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('App Name'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Text(
-            _message,
-            style: TextStyle(
-                fontSize: 32.0,
-                color: const Color(0xFF000000),
-                fontWeight: FontWeight.w400,
-                fontFamily: "Roboto"),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-          ),
-
-          //スイッチ
-          CupertinoSwitch(
-            value: _switch,
-            onChanged: (bool value) {
-              print('switch');
-              setState(() {
-                _switch = value;
-                _message = 'switch: $_switch';
-              });
-            },
-          ),
-
-          //スライダー
-          CupertinoSlider(
-            value: _slider,
-            min: 0.0,
-            max: 1.0,
-            divisions: 100,
-            onChanged: (double value) {
-              print(value);
-              setState(() {
-                _slider = value;
-                _message = 'slider: $_slider';
-              });
-            },
-          ),
-
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: CupertinoButton(
-              borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-              pressedOpacity: 0.5,
-              color: CupertinoColors.activeBlue,
-              onPressed: buttonPressed,
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                "tap me!",
-                style: TextStyle(
-                  fontSize: 28.0,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: "Roboto",
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-
-      //ナビゲーションバー
-      bottomNavigationBar: CupertinoNavigationBar(
-        leading: Icon(CupertinoIcons.left_chevron),
-        middle: Text('Navigation'),
-        trailing: IconButton(
-          icon: Icon(CupertinoIcons.right_chevron),
-          onPressed: showPicker,
-        ),
+      body: Center(
+        child: MyRenderBoxWidget(),
       ),
     );
   }
+}
 
-  Widget buttonPressed() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text("Hello!"),
-        actions: <Widget>[
-          CupertinoDialogAction(
-              child: const Text('Cancel'),
-              onPressed: () => Navigator.pop<String>(context, 'Cancel')),
-          CupertinoDialogAction(
-              child: const Text('OK'),
-              onPressed: () => Navigator.pop<String>(context, 'OK'))
-        ],
-      ),
-    ).then<void>((value) => resultAlert(value));
+class MyRenderBoxWidget extends SingleChildRenderObjectWidget {
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return _MyRenderBox();
+  }
+}
+
+class _MyRenderBox extends RenderBox {
+  ui.Image _img;
+
+  @override
+  bool hitTest(HitTestResult result, {@required Offset position}) {
+    return true;
   }
 
-  //ダイアログアクション・イベント
-  void resultAlert(String value) {
-    setState(() {
-      _message = 'selected: $value';
-    });
+  _MyRenderBox() {
+    loadAssetImage('image.jpg');
   }
 
-  //ピッカー表示
-  void showPicker() {
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoPicker(
-          backgroundColor: CupertinoColors.black,
-          itemExtent: 50.0,
-          children: <Widget>[
-            Text(
-              'One',
-              style: TextStyle(
-                  fontSize: 32.0,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white),
-            ),
-            Text(
-              'Two',
-              style: TextStyle(
-                  fontSize: 32.0,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white),
-            ),
-            Text(
-              'Three',
-              style: TextStyle(
-                  fontSize: 32.0,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white),
-            ),
-            Text(
-              'Four',
-              style: TextStyle(
-                  fontSize: 32.0,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white),
-            ),
-            Text(
-              'Five',
-              style: TextStyle(
-                  fontSize: 32.0,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white),
-            ),
-          ],
-          onSelectedItemChanged: (int value) {
-            print('pick $value');
-          },
-        );
-      },
-    );
+  loadAssetImage(String fname) => rootBundle.load("assets/$fname").then((bd) {
+        Uint8List u8lst = Uint8List.view(bd.buffer);
+        ui.instantiateImageCodec(u8lst).then((codec) {
+          codec.getNextFrame().then((frameInfo) {
+            _img = frameInfo.image;
+            markNeedsPaint();
+            print("_img created: $_img");
+          });
+        });
+      });
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    Canvas c = context.canvas;
+    int dx = offset.dx.toInt();
+    int dy = offset.dy.toInt();
+
+    Path path = Path();
+    Rect r = Rect.fromLTWH(dx + 50.0, dy + 50.0, 75.0, 75.0);
+    path.addOval(r);
+    r = Rect.fromLTWH(dx + 75.0, dy + 75.0, 125.0, 125.0);
+    path.addOval(r);
+    r = Rect.fromLTWH(dx + 125.0, dy + 125.0, 175.0, 175.0);
+    path.addOval(r);
+
+    c.save();
+
+    Paint p = Paint();
+    p.color = Color.fromARGB(150, 255, 0, 0);
+    p.style = PaintingStyle.fill;
+    c.drawPath(path, p);
+
+    c.translate(0.0, 100.0);
+    p.color = Color.fromARGB(150, 0, 0, 255);
+    c.drawPath(path, p);
+
+    p.color = Color.fromARGB(150, 0, 255, 0);
+    c.rotate(-0.5 * pi);
+    c.translate(-600.0, -200.0);
+    c.scale(1 * 1.75);
+    c.drawPath(path, p);
+
+    c.restore();
   }
 }
